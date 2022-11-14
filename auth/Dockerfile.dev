@@ -1,7 +1,9 @@
-FROM node:16-alpine
+FROM --platform=linux/amd64 node:16
 
 WORKDIR /app
 COPY package.json .
+COPY .env .
+COPY prisma ./prisma/
 RUN npm install
 COPY . .
 

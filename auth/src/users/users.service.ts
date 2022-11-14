@@ -1,12 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PasswordService } from './password.service';
 
 @Injectable()
 export class UsersService {
-  signUp(signUpDto: SignUpDto) {
-    return 'This action signs a user up';
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly passwordService: PasswordService,
+  ) {}
+
+  async signUp({ email, password }: SignUpDto) {
+    const existingUser = await this.prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException(`Email ${email} already used.`);
+    }
+
+    const hashedPassword = await this.passwordService.hashPassword(password);
+
+    return await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+      },
+    });
   }
 
   signIn(signUpDto: SignUpDto) {
