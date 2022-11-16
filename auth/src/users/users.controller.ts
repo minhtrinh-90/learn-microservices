@@ -1,64 +1,70 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 
-import { CreateUserDto } from './dto/create-user.dto';
+import { CookieConfig } from '../common/configs/config.interface';
+import { CurrentUser } from './current-user.decorator';
 import { SignUpDto } from './dto/signup.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get('/current-user')
-  findCurrentUser() {
-    return 'Hi there';
+  findCurrentUser(@CurrentUser() user) {
+    return user;
   }
 
   @Post('signup')
-  signUp(@Body() signUpDto: SignUpDto) {
-    return this.usersService.signUp(signUpDto);
+  async signUp(
+    @Body() signUpDto: SignUpDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } = await this.usersService.signUp(
+      signUpDto,
+    );
+    res.cookie(
+      'jwt',
+      accessToken,
+      this.configService.get<CookieConfig>('cookie'),
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   @Post('signin')
-  signIn(@Body() signUpDto: SignUpDto) {
-    return this.usersService.signIn(signUpDto);
+  async signIn(
+    @Body() signUpDto: SignUpDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } = await this.usersService.signIn(
+      signUpDto,
+    );
+    res.cookie(
+      'jwt',
+      accessToken,
+      this.configService.get<CookieConfig>('cookie'),
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('signout')
-  signOut() {
+  signOut(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('jwt', this.configService.get<CookieConfig>('cookie'));
     return this.usersService.signOut();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
   }
 }

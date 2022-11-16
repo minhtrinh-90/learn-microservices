@@ -1,9 +1,16 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'nestjs-prisma';
 
-import { CreateUserDto } from './dto/create-user.dto';
+import { SecurityConfig } from '../common/configs/config.interface';
 import { SignUpDto } from './dto/signup.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Token } from './models/token.model';
 import { PasswordService } from './password.service';
 
 @Injectable()
@@ -11,6 +18,8 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async signUp({ email, password }: SignUpDto) {
@@ -24,39 +33,76 @@ export class UsersService {
 
     const hashedPassword = await this.passwordService.hashPassword(password);
 
-    return await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
       },
     });
+
+    return this.generateTokens({ userId: user.id });
   }
 
-  signIn(signUpDto: SignUpDto) {
-    return 'This action signs a user in';
+  async signIn({ email, password }: SignUpDto) {
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+    });
+    if (!user) {
+      throw new BadRequestException(`Invalid credentials`);
+    }
+
+    const isValidPassword = await this.passwordService.validatePassword(
+      password,
+      user.password,
+    );
+    if (!isValidPassword) {
+      throw new BadRequestException(`Invalid credentials`);
+    }
+
+    return this.generateTokens({ userId: user.id });
   }
 
   signOut() {
-    return 'This action signs a user up';
+    return 'This action signs a user out';
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  validateUser(userId: string) {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
   }
 
-  findAll() {
-    return `This action returns all users`;
+  generateTokens(payload: { userId: string }): Token {
+    return {
+      accessToken: this.generateAccessToken(payload),
+      refreshToken: this.generateRefreshToken(payload),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  private generateAccessToken(payload: { userId: string }): string {
+    return this.jwtService.sign(payload);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  private generateRefreshToken(payload: { userId: string }): string {
+    const securityConfig = this.configService.get<SecurityConfig>('security');
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: securityConfig.refreshIn,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  refreshToken(token: string) {
+    try {
+      const { userId } = this.jwtService.verify(token, {
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+      });
+
+      return this.generateTokens({
+        userId,
+      });
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
   }
 }

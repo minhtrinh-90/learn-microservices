@@ -19,6 +19,12 @@ const config: Config = {
     refreshIn: '7d',
     bcryptSaltOrRound: 10,
   },
+  cookie: {
+    httpOnly: true,
+    sameSite: true,
+    secure: true,
+    signed: true,
+  },
 };
 
 export default (): Config => config;

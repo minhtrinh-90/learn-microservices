@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import { PrismaService } from 'nestjs-prisma';
 
 import { AppModule } from './app.module';
@@ -24,6 +25,9 @@ async function bootstrap() {
   const corsConfig = configService.get<CorsConfig>('cors');
   const swaggerConfig = configService.get<SwaggerConfig>('swagger');
 
+  // Cookie
+  app.use(cookieParser(configService.get<string>('JWT_ACCESS_SECRET')));
+
   // Swagger Api
   if (swaggerConfig.enabled) {
     const options = new DocumentBuilder()
@@ -40,15 +44,6 @@ async function bootstrap() {
   if (corsConfig.enabled) {
     app.enableCors();
   }
-
-  const config = new DocumentBuilder()
-    .setTitle('Auth module')
-    .setDescription('Auth API description')
-    .setVersion('1.0')
-    .addTag('auth')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT || nestConfig.port || 3000);
 }

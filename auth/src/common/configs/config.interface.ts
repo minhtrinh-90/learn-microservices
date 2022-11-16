@@ -3,6 +3,7 @@ export interface Config {
   cors: CorsConfig;
   swagger: SwaggerConfig;
   security: SecurityConfig;
+  cookie: CookieConfig;
 }
 
 export interface NestConfig {
@@ -25,4 +26,11 @@ export interface SecurityConfig {
   expiresIn: string;
   refreshIn: string;
   bcryptSaltOrRound: string | number;
+}
+
+export interface CookieConfig {
+  httpOnly: boolean;
+  sameSite: boolean;
+  signed: boolean;
+  secure: boolean;
 }
