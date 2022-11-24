@@ -69,6 +69,7 @@ export class UsersService {
   validateUser(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
+      // TODO: exclude only password when available in prisma
       select: { id: true, email: true },
     });
   }
