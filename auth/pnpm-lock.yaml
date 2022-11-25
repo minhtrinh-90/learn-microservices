@@ -27,6 +27,7 @@ specifiers:
   class-transformer: ^0.5.1
   class-validator: ^0.13.2
   cookie-parser: ^1.4.6
+  dotenv-cli: ^6.0.0
   eslint: ^8.0.1
   eslint-config-prettier: ^8.3.0
   eslint-plugin-prettier: ^4.0.0
@@ -84,6 +85,7 @@ devDependencies:
   '@types/supertest': 2.0.12
   '@typescript-eslint/eslint-plugin': 5.42.1_2udltptbznfmezdozpdoa2aemq
   '@typescript-eslint/parser': 5.42.1_rmayb2veg2btbq6mbmnyivgasy
+  dotenv-cli: 6.0.0
   eslint: 8.27.0
   eslint-config-prettier: 8.5.0_eslint@8.27.0
   eslint-plugin-prettier: 4.2.1_v7o5sx5x3wbs57ifz6wc4f76we
@@ -2462,15 +2464,23 @@ packages:
       esutils: 2.0.3
     dev: true
 
+  /dotenv-cli/6.0.0:
+    resolution: {integrity: sha512-qXlCOi3UMDhCWFKe0yq5sg3X+pJAz+RQDiFN38AMSbUrnY3uZshSfDJUAge951OS7J9gwLZGfsBlWRSOYz/TRg==}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
+      dotenv: 16.0.1
+      dotenv-expand: 8.0.3
+      minimist: 1.2.7
+    dev: true
+
   /dotenv-expand/8.0.3:
     resolution: {integrity: sha512-SErOMvge0ZUyWd5B0NXMQlDkN+8r+HhVUsxgOO7IoPDOdDRD2JjExpN6y3KnFR66jsJMwSn1pqIivhU5rcJiNg==}
     engines: {node: '>=12'}
-    dev: false
 
   /dotenv/16.0.1:
     resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
     engines: {node: '>=12'}
-    dev: false
 
   /ecdsa-sig-formatter/1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}

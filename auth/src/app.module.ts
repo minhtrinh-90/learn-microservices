@@ -4,12 +4,19 @@ import { PrismaModule } from 'nestjs-prisma';
 
 import { prismaLoggingMiddleware } from '@/common/middlewares/prisma-logging.middleware';
 
+import { AppController } from './app.controller';
 import config from './common/configs/config';
 import { UsersModule } from './users/users.module';
 
+const ENV = process.env.NODE_ENV;
+
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, load: [config] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config],
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
+    }),
     PrismaModule.forRoot({
       isGlobal: true,
       prismaServiceOptions: {
@@ -19,5 +26,6 @@ import { UsersModule } from './users/users.module';
     }),
     UsersModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

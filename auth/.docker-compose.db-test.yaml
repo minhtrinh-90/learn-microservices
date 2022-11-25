@@ -1,0 +1,17 @@
+# Set the version of docker compose to use
+version: '3.9'
+
+# The containers that compose the project
+services:
+  db:
+    image: 'bitnami/mongodb:4.4'
+    restart: always
+    container_name: integration-tests-prisma
+    ports:
+      - '27017:27017'
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: 127.0.0.1
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_ROOT_USER: root
+      MONGODB_ROOT_PASSWORD: secret
+      MONGODB_REPLICA_SET_KEY: replicasetkey123
