@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 
@@ -42,6 +50,7 @@ export class UsersController {
   }
 
   @Post('signin')
+  @HttpCode(200)
   async signIn(
     @Body() signUpDto: SignUpDto,
     @Res({ passthrough: true }) res: Response,
@@ -63,6 +72,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post('signout')
+  @HttpCode(200)
   signOut(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('jwt', this.configService.get<CookieConfig>('cookie'));
     return this.usersService.signOut();
