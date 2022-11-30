@@ -2,9 +2,8 @@ FROM --platform=linux/amd64 node:16
 
 WORKDIR /app
 COPY package.json .
-COPY .env .
 COPY prisma ./prisma/
 RUN npm install
 COPY . .
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:staging"]

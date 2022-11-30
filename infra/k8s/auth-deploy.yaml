@@ -15,6 +15,9 @@ spec:
       containers:
         - name: auth
           image: trinhno/auth
+          env:
+            - name: DATABASE_URL
+              value: mongodb://root:secret@auth-mongo-svc:$27017/auth?authSource=admin&directConnection=true
 ---
 apiVersion: v1
 kind: Service
