@@ -1,30 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: tickets-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: tickets
   template:
     metadata:
       labels:
-        app: auth
+        app: tickets
     spec:
       restartPolicy: Always
       containers:
-        - name: auth
-          image: trinhno/auth
+        - name: tickets
+          image: trinhno/tickets
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-svc
+  name: tickets-svc
 spec:
   selector:
-    app: auth
+    app: tickets
   ports:
-    - protocol: TCP
+    - name: tickets
+      protocol: TCP
       port: 3000
       targetPort: 3000

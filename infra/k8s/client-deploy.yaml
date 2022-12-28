@@ -11,6 +11,7 @@ spec:
       labels:
         app: client
     spec:
+      restartPolicy: Always
       containers:
       - name: client
         image: trinhno/client
@@ -25,7 +26,6 @@ spec:
   selector:
     app: client
   ports:
-  - name: client
-    protocol: TCP
+  - protocol: TCP
     port: 4000
     targetPort: 4000

@@ -24,7 +24,7 @@ export class UsersController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('/current-user')
+  @Get('current-user')
   findCurrentUser(@CurrentUser() user) {
     return user;
   }

@@ -10,7 +10,7 @@ export default function SignUp() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const { doRequest, errors, loading } = useRequest({
-    url: '/api/users/signup',
+    url: '/api/users/signin',
     method: HttpMethods.POST,
     body: { email, password },
     onSuccess: () => router.push('/'),
@@ -25,7 +25,7 @@ export default function SignUp() {
   return (
     <div className="container">
       <form onSubmit={onSubmit}>
-        <h1>Sign Up!</h1>
+        <h1>Sign In</h1>
         <div className="form-group">
           <label htmlFor="email">Email address</label>
           <input
@@ -60,7 +60,7 @@ export default function SignUp() {
         )}
         <div className="mt-2">
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            Sign Up
+            Sign In
           </button>
         </div>
       </form>

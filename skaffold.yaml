@@ -16,11 +16,23 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
+    - image: trinhno/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
     - image: trinhno/client
       context: client
       docker:
         dockerfile: Dockerfile.dev
       sync:
         manual:
-          - src: "src/**/*.ts"
+          - src: "**/*.ts"
+            dest: .
+          - src: "**/*.tsx"
+            dest: .
+          - src: "**/*.css"
             dest: .
